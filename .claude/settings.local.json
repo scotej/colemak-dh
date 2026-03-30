@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xxd \"C:/Users/638374/PycharmProjects/mod-dh/colemak dh.klc\")",
+      "Bash(python3:*)"
+    ]
+  }
+}
