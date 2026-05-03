@@ -12,7 +12,11 @@ x c d v z  k h , . /
 
 Number row, punctuation, and all non-alpha keys remain in their standard US positions.
 
-## Installation
+## Quick install
+
+Run `installer/setup.exe` (admin required), then add the layout via **Settings > Time & Language > Language > Keyboard**. The prebuilt installer covers x86, x64, IA64, and WOW64.
+
+## Build from source
 
 1. Download and install [MSKLC](https://www.microsoft.com/en-us/download/details.aspx?id=102134).
 2. Open `colemak dh.klc` in MSKLC.
