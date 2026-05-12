@@ -1,9 +1,8 @@
 # Colemak-DH Windows Keyboard Layout
 
-A Windows implementation of the [Colemak-DH](https://colemakmods.github.io/mod-dh/) ergonomic keyboard
+A Windows implementation of the [Colemak-DH](https://colemakmods.github.io/mod-dh/) keyboard
 layout. Only the letter keys are remapped; the number row, punctuation, Enter, Tab, the numpad, and all
-other keys keep their standard US positions. Caps Lock continues to work as Caps Lock, and application
-shortcuts (Ctrl+C, Ctrl+V, Ctrl+Z, Ctrl+X, …) follow the remapped letters.
+other keys keep their standard US positions.
 
 The layout is defined in `colemak dh.klc`, a
 [Microsoft Keyboard Layout Creator (MSKLC)](https://www.microsoft.com/en-us/download/details.aspx?id=102134)
