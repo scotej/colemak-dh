@@ -1,100 +1,86 @@
-# Colemak-DH Windows Keyboard Layout
+# Colemak-DH for Windows
 
-A custom Windows keyboard layout that implements the [Colemak-DH](https://colemakmods.github.io/mod-dh/)
-ergonomic layout. The layout is defined in **`colemak dh.klc`** (a source file for
-[Microsoft Keyboard Layout Creator — MSKLC](https://www.microsoft.com/en-us/download/details.aspx?id=102134)),
-and this repo also ships a **prebuilt installer** under `installer/` so you don't need MSKLC just to use it.
+This is the [Colemak-DH](https://colemakmods.github.io/mod-dh/) keyboard layout, packaged up for
+Windows. It only remaps the letter keys — your number row, punctuation, Enter, Tab, the numpad and
+everything else stay exactly where they are on a normal US keyboard. Caps Lock still behaves like Caps
+Lock, and shortcuts like Ctrl+C / Ctrl+V follow the letters, so they end up wherever `c` and `v` now
+live.
 
-It is built on the US-English locale, so once installed it appears in the Windows keyboard picker
-alongside the standard **US** keyboard, named **ColemDH**.
+The layout itself is `colemak dh.klc` — the source file you'd open in
+[Microsoft Keyboard Layout Creator (MSKLC)](https://www.microsoft.com/en-us/download/details.aspx?id=102134) —
+but you don't need MSKLC just to use it: there's a prebuilt installer in `installer/`. Once it's
+installed, Windows lists the layout in its keyboard picker as **ColemDH**, right next to the usual
+**US** one.
 
-> ### ✅ The prebuilt binaries are verified clean
->
-> Everything under `installer/` — `setup.exe`, the `.msi` packages, and the per-architecture
-> `ColemDH.dll` builds — has been analysed by the
-> [**ANY.RUN** malware sandbox](https://app.any.run/tasks/94e96fe3-a901-4064-b825-9ca452b80b61).
-> Verdict: **"No threats detected."**
->
-> **Full report → https://app.any.run/tasks/94e96fe3-a901-4064-b825-9ca452b80b61**
->
-> These files are also the unmodified output of building `colemak dh.klc` with MSKLC, so you can rebuild
-> them yourself and compare (see section 5). Prefer not to trust any prebuilt binary at all? Ignore
-> `installer/` and build the layout from source.
-
-## The layout
-
-```
-q w f p b   j l u y ;
-a r s t g   m n e i o
-x c d v z   k h , . /
-```
-
-- The number row, all punctuation, Enter, Tab, Backspace, the numpad, etc. stay **exactly** where they
-  are on a standard US keyboard — only the letter keys move.
-- **Caps Lock still means Caps Lock** — it capitalises the letter keys above and nothing else.
-- Application shortcuts follow the **letters**, not the physical keys, so Ctrl+C / Ctrl+V / Ctrl+Z /
-  Ctrl+X are wherever `c` / `v` / `z` / `x` now live.
-
----
-
-## 1. Install it (the easy way — use the prebuilt installer)
+## Installing it (the easy way)
 
 1. Clone or download this repo.
-2. Open the **`installer/`** folder and run **`setup.exe`**. Windows will ask for administrator rights
-   via a UAC prompt — say **Yes** (installing a keyboard layout writes to the Windows system folder and
-   the registry). If double-clicking doesn't prompt, right-click `setup.exe` → **Run as administrator**.
-   *Run it from inside `installer/`* — it needs the `.msi` files and the `amd64` / `i386` / `ia64` / `wow64`
-   subfolders that sit next to it.
-3. There is no wizard — it installs in a second or two and exits. The layout is now **installed** but not
-   yet **active**; do section 2 below to switch to it.
+2. Open the `installer/` folder and run **`setup.exe`**. Windows pops a UAC prompt asking for admin
+   rights — say yes; installing a keyboard layout has to write into the Windows system folder and the
+   registry. (If a plain double-click doesn't prompt, right-click → **Run as administrator**.) Run it
+   from *inside* `installer/` — it expects the `.msi` files and the `amd64` / `i386` / `ia64` / `wow64`
+   folders to be sitting right next to it.
+3. There's no wizard to click through — it does its thing in a second or two and quits.
 
-### How `setup.exe` actually works
+After that the layout is *installed* but not *active*: Windows knows it exists, but you're still typing
+QWERTY until you switch to it (next section).
 
-`setup.exe` is a small bootstrapper, **not** the layout itself. When you run it, it:
+### What `setup.exe` actually does
 
-1. detects whether your Windows is 64‑bit, 32‑bit, or Itanium, and
-2. runs the matching package — `ColemDH_amd64.msi`, `ColemDH_i386.msi`, or `ColemDH_ia64.msi` — which
-3. **copies the keyboard‑layout DLL(s) into your Windows system folder** (exact paths in section 3), and
-4. **writes a registry entry** that tells Windows "there's a keyboard layout called *ColemDH* in
-   `ColemDH.dll`", and
-5. registers an entry in **Settings → Apps → Installed apps** so you can uninstall it later.
+`setup.exe` is just a little launcher — the real layout is the `ColemDH.dll` it carries around. When
+you run it, it:
 
-Installing does not log you out or restart anything; running apps see the new layout the next time they
-get keyboard focus. (The binaries you're running here are sandbox-verified — see the note at the top.)
+- figures out whether your Windows is 64-bit, 32-bit or Itanium and runs the matching package
+  (`ColemDH_amd64.msi`, `ColemDH_i386.msi` or `ColemDH_ia64.msi`);
+- has that package copy the layout DLL into your Windows system folder (exactly where is spelled out
+  below);
+- adds a registry entry so Windows knows there's a keyboard layout called *ColemDH* in `ColemDH.dll`;
+  and
+- registers it in **Settings → Apps → Installed apps**, so you can uninstall it the normal way later.
 
----
+None of that logs you out or restarts anything — open apps pick up the new layout the next time they
+get keyboard focus.
 
-## 2. Turn the layout on
+If you'd rather not run a prebuilt `.exe` on faith: the files under `installer/` (`setup.exe`, the
+`.msi` packages, the `ColemDH.dll` builds) have been through the
+[ANY.RUN sandbox](https://app.any.run/tasks/94e96fe3-a901-4064-b825-9ca452b80b61) and nothing was
+flagged. They're also just the output of building `colemak dh.klc` with MSKLC, so you can rebuild and
+compare — or skip `installer/` altogether and build it yourself (see *Building it yourself* below).
 
-Installing only makes the layout **available**. To actually type with it:
+## Switching to it
 
-1. **Settings → Time & language → Language & region.**
-2. Next to your language (e.g. *English (United States)*), click **⋯ → Language options**.
-3. Under **Keyboards**, click **Add a keyboard** → choose **ColemDH**.
-4. Switch layouts with **Win + Space** (or the language button next to the clock): pick **ColemDH** for
-   Colemak-DH, pick **US** to go back to QWERTY.
+Installing only makes the layout *available* — you still have to pick it:
 
-To make ColemDH the default, remove the **US** keyboard from that same list, or set ColemDH as the
+1. Open **Settings → Time & language → Language & region**.
+2. Find your language (e.g. *English (United States)*), click the **⋯** next to it, and choose
+   **Language options**.
+3. Under **Keyboards**, hit **Add a keyboard** and pick **ColemDH**.
+4. From then on, **Win + Space** cycles through your keyboards (so does the little language button down
+   by the clock) — pick **ColemDH** for Colemak-DH, **US** to drop back to QWERTY.
+
+Want ColemDH to be the default? Either remove **US** from that keyboard list, or set ColemDH as the
 default input method under **Advanced keyboard settings**.
 
----
+## Where the DLL ends up
 
-## 3. Where the DLL goes
+Short answer: you don't put it anywhere — `setup.exe` does. But the question always comes up, so here's
+exactly where things land.
 
-**Short version: you never copy `ColemDH.dll` yourself — the installer does it for you.** This repo
-ships one DLL build per CPU architecture, and `setup.exe` picks the right one(s) automatically:
+The repo carries one `ColemDH.dll` build per CPU architecture, and `setup.exe` picks the right one(s)
+for your machine:
 
-| File in this repo | What it is | Installed to (by `setup.exe`) |
+| In the repo | What it is | Where `setup.exe` puts it |
 |---|---|---|
-| `installer/amd64/ColemDH.dll` | 64‑bit layout DLL | `C:\Windows\System32\ColemDH.dll` — on 64‑bit Windows |
-| `installer/wow64/ColemDH.dll` | 32‑bit layout DLL for 32‑bit apps | `C:\Windows\SysWOW64\ColemDH.dll` — on 64‑bit Windows (installed alongside the amd64 one) |
-| `installer/i386/ColemDH.dll`  | 32‑bit layout DLL | `C:\Windows\System32\ColemDH.dll` — on 32‑bit Windows |
-| `installer/ia64/ColemDH.dll`  | Itanium layout DLL | `C:\Windows\System32\ColemDH.dll` — on Itanium Windows (obsolete; you almost certainly don't have one) |
+| `installer/amd64/ColemDH.dll` | the 64-bit build | `C:\Windows\System32\ColemDH.dll` — on 64-bit Windows |
+| `installer/wow64/ColemDH.dll` | the 32-bit build, for 32-bit apps | `C:\Windows\SysWOW64\ColemDH.dll` — also installed on 64-bit Windows, next to the one above |
+| `installer/i386/ColemDH.dll` | the 32-bit build | `C:\Windows\System32\ColemDH.dll` — on 32-bit Windows |
+| `installer/ia64/ColemDH.dll` | the Itanium build | `C:\Windows\System32\ColemDH.dll` — on Itanium Windows, i.e. basically nobody |
 
-> Note the Windows folder names are counter‑intuitive: on 64‑bit Windows, **`System32` holds the 64‑bit
-> DLL** and **`SysWOW64` holds the 32‑bit DLL**. That's normal — `setup.exe` handles it.
+And yes, the folder names look backwards: on 64-bit Windows the *64-bit* DLL goes in `System32` and the
+*32-bit* one in `SysWOW64`. That's a long-standing Windows quirk, not a mistake — `setup.exe` handles
+it.
 
-`setup.exe` also writes this registry key so Windows knows the DLL exists and what to call it:
+It also writes a registry key, and that's the bit that actually makes Windows notice the DLL:
 
 ```
 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\a0000409
@@ -102,66 +88,68 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\a0000409
     Layout Text = ColemDH
 ```
 
-(`a0000409` is the layout ID MSKLC assigned this layout; the trailing `0409` is the US‑English locale.)
-The DLL on its own does nothing — Windows only loads it because of this registry entry, which is the
-whole reason running `setup.exe` is the supported path.
+(`a0000409` is the ID MSKLC assigned this layout; the `0409` on the end is the US-English locale.)
+Without that key the DLL just sits on disk doing nothing — which is the whole reason `setup.exe` is the
+supported route, rather than copying files around by hand.
 
-### Installing the DLL by hand (advanced — only if you can't run `setup.exe`)
+### Doing it by hand
 
-If you built just the DLL in MSKLC, or want to drop in a DLL from `installer/<arch>/` without the
-installer, do it from an **elevated** PowerShell (run from the repo root):
+If all you've got is a loose `ColemDH.dll` — you built only the DLL in MSKLC, say, or pulled one out of
+`installer/<arch>/` — and you don't want to use the installer, you can wire it up yourself from an
+**elevated** PowerShell, run from the repo root:
 
 ```powershell
-# On 64-bit Windows:
+# 64-bit Windows:
 Copy-Item installer\amd64\ColemDH.dll  "$env:windir\System32\ColemDH.dll"
 Copy-Item installer\wow64\ColemDH.dll  "$env:windir\SysWOW64\ColemDH.dll"
 
-# Register it so Windows offers it as a keyboard layout:
+# tell Windows about it:
 $k = 'HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\a0000409'
 New-Item $k -Force | Out-Null
 Set-ItemProperty $k 'Layout File' 'ColemDH.dll'
 Set-ItemProperty $k 'Layout Text' 'ColemDH'
 ```
 
-Then sign out and back in, and add the layout as in section 2. (If it doesn't show up in the modern
-*Add a keyboard* list, that's because the installer also writes display‑name values into the key — at
-that point just run `setup.exe`, which sets up everything correctly.)
+Then sign out and back in and add it the same way as in *Switching to it*. One catch: the modern
+*Add a keyboard* list sometimes won't show a layout that's missing the extra display-name values the
+installer normally writes — if that bites you, just run `setup.exe` and let it do the full job.
 
----
+## Removing it
 
-## 4. Uninstall
+- The tidy way: **Settings → Apps → Installed apps**, find **ColemDH**, **Uninstall**. That deletes the
+  DLL(s) from `System32` / `SysWOW64` and removes the registry key.
+- Or run `installer/setup.exe` again — if the layout's already installed, it offers to take it back out.
+- If you also added it as a keyboard under your language, remove it there too
+  (**Language options → Keyboards → ColemDH → Remove**), otherwise it keeps showing up in the Win+Space
+  rotation.
 
-- **Settings → Apps → Installed apps**, find **ColemDH**, and choose **Uninstall**. This removes the
-  DLL(s) from `System32` / `SysWOW64` and deletes the registry key.
-- Or re-run **`installer/setup.exe`** — an already-installed layout can be removed from there.
-- If you also added it as a keyboard under your language (section 2), remove it there too:
-  **Language options → Keyboards → ColemDH → Remove**, so it stops appearing in the Win+Space picker.
+## Building it yourself
 
----
+You only need this if you actually want to *change* the layout — to just use it, the installer above is
+everything.
 
-## 5. Build or modify the layout yourself (MSKLC)
+1. Install [Microsoft Keyboard Layout Creator (MSKLC)](https://www.microsoft.com/en-us/download/details.aspx?id=102134).
+   It's free, and it wants the .NET Framework.
+2. In MSKLC, **File → Load Source File…** and open `colemak dh.klc`. The layout shows up on the
+   on-screen keyboard, and you can click keys to remap them.
+3. **Project → Build DLL and Setup Package.** MSKLC compiles the `.klc` (through Windows' kbdutool / cl
+   toolchain) into a `ColemDH.dll` for each architecture and wraps them in a `setup.exe` plus the three
+   `.msi` packages — basically regenerating everything that's in `installer/`. It tells you where it
+   left the output.
+4. Run that `setup.exe` (as administrator) to install your build, then switch to it as above.
+5. To keep the change, copy MSKLC's output over `installer/`, keep `colemak dh.klc` in step with it,
+   and commit.
 
-You only need this if you want to **change** the layout — to just use it, section 1 is enough.
+A few things worth knowing if you're editing `colemak dh.klc` directly:
 
-1. Install [Microsoft Keyboard Layout Creator (MSKLC)](https://www.microsoft.com/en-us/download/details.aspx?id=102134)
-   (free; needs the .NET Framework).
-2. In MSKLC, **File → Load Source File…** and open **`colemak dh.klc`**. You'll see the layout on the
-   on‑screen keyboard; click keys to edit them if you want.
-3. **Project → Build DLL and Setup Package.** MSKLC compiles the `.klc` (via the Windows kbdutool / cl
-   toolchain) into one `ColemDH.dll` per architecture, then bundles them into `setup.exe` + the three
-   `.msi` packages — i.e. it regenerates exactly the contents of `installer/`. MSKLC tells you the
-   output folder.
-4. Run the generated **`setup.exe`** (as administrator) to install your build, then enable it as in
-   section 2.
-5. To keep your changes: copy MSKLC's output over `installer/`, keep `colemak dh.klc` in sync, and commit.
-
-### Notes for editing `colemak dh.klc`
-
-- It must stay **UTF‑16LE** encoded — that's what MSKLC reads. Editing in place keeps the encoding;
-  if you recreate the file, save it as *UTF‑16 LE*. Inspect raw bytes with `xxd` or a hex‑aware editor.
-- Scan codes are hex; the character columns are hex Unicode codepoints (`0061` = `a`).
-- The `Cap` column is `1` for keys Caps Lock should affect (the letters) and `0` for everything else.
-- VK codes are assigned to the **remapped** character, which is why Ctrl shortcuts move with the letters.
-- This build deliberately uses 4 shift states (`0`, `1`, `2`, `6`). Don't drop the AltGr column (`6`):
-  on Windows 11 24H2, a layout missing it makes `InputSwitch.dll` crash Explorer and the layout silently
-  fails to activate. See the commit history for the full saga.
+- It has to stay **UTF-16LE** — that's the encoding MSKLC reads. Editing it in place keeps that; if you
+  ever recreate the file, save it as *UTF-16 LE*. To look at the raw bytes use `xxd` or a hex-aware
+  editor (an ordinary text editor just shows it full of wide-spaced characters).
+- Scan codes are in hex, and the character columns are hex Unicode codepoints — `0061` is `a`.
+- The `Cap` column is `1` for the keys Caps Lock should affect (the letters) and `0` for everything
+  else.
+- VK codes follow the *remapped* character, not the physical key — that's why Ctrl shortcuts travel
+  with the letters.
+- This build keeps four shift states on purpose (`0`, `1`, `2`, `6`). Don't drop the AltGr column
+  (`6`): on Windows 11 24H2 a layout without it makes `InputSwitch.dll` take Explorer down with it, and
+  the layout quietly fails to activate. The commit history has the full, painful story.
