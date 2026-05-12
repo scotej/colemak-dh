@@ -12,6 +12,7 @@ layout. After installation the layout appears in the Windows keyboard picker as 
 ## Contents
 
 - [Layout](#layout)
+- [How it works](#how-it-works)
 - [Security](#security)
 - [Installation](#installation)
 - [Enabling the layout](#enabling-the-layout)
@@ -33,13 +34,67 @@ x c d v z   k h , . /
 - Virtual-key codes follow the *remapped* character rather than the physical key, so shortcuts such as
   Ctrl+Z / Ctrl+X / Ctrl+C / Ctrl+V move with the letters.
 
+## How it works
+
+`ColemDH.dll` is a Windows *keyboard-layout DLL* — the same kind of file as the keyboard layouts
+already in `C:\Windows\System32`: `KBDUS.DLL` (US QWERTY), `KBDDV.DLL` (Dvorak), `KBDCMK.DLL`
+(Colemak), and roughly two hundred others. It is not an IME, not a Text Services Framework component,
+and not a driver, hook, or service — it adds one more entry to the same list of layouts Windows
+already maintains.
+
+### The DLL is a table, not a program
+
+A keyboard-layout DLL exports a single function, `KbdLayerDescriptor()`, which returns a pointer to a
+static `KBDTABLES` structure. That structure is nothing but lookup tables:
+
+- scan code → virtual key (with separate tables for the `E0` / `E1` extended scan codes);
+- (virtual key + modifier state) → the Unicode character(s) produced — the `VK_TO_WCHARS` table, here
+  `VK_TO_WCHARS4` because the layout defines four shift states (`0`, `1`, `2`, `6`);
+- the modifier-key definitions, the dead-key combinations, and the human-readable key names.
+
+There is no executable logic in the DLL — only this data. The sections of `colemak dh.klc` map
+directly onto it: `SHIFTSTATE` becomes the modifier table, each `LAYOUT` row becomes one
+scan-code / VK / character entry, and `KEYNAME` / `KEYNAME_EXT` become the key-name tables. When MSKLC
+runs *Build DLL and Setup Package*, `kbdutool` converts the `.klc` into a small C source file of those
+table definitions and `cl` compiles it into the DLL. (It is also why an out-of-spec `.klc` either
+fails to compile or produces a layout that crashes whatever reads it — see the `colemak dh.klc` notes
+near the end of this file.)
+
+### What happens when you press a key
+
+1. The keyboard hardware and the kernel-mode keyboard drivers (`i8042prt.sys` or `kbdhid.sys`, then
+   `kbdclass.sys`) deliver a scan code.
+2. `win32k.sys` — the Windows window-manager component, which runs in kernel mode — looks the scan
+   code up in the *currently active* layout's tables: scan code → virtual key, then
+   (virtual key + the current Shift / Ctrl / AltGr / Caps Lock state) → character(s), applying any
+   pending dead-key state.
+3. The result is delivered to the focused window as `WM_KEYDOWN` / `WM_CHAR` (and the `WM_SYS*`
+   variants).
+
+User-mode code reaches the same tables through `user32.dll` functions such as `ToUnicodeEx`,
+`MapVirtualKeyEx`, and `VkKeyScanEx`, which load the layout DLL into the calling process. So the
+layout's data is read both in kernel mode (the input path above) and in user mode (those APIs) — but
+in both cases it is only *read* as a table. The DLL has no initialization logic of its own and
+contributes no code that runs: `win32k.sys` and `user32.dll` call `KbdLayerDescriptor()` and consume
+the returned tables, nothing more.
+
+### How a layout becomes active
+
+Windows discovers the layouts that exist from the registry key
+`HKLM\SYSTEM\CurrentControlSet\Control\Keyboard Layouts` — the key `setup.exe` adds (see
+[Where the files are installed](#where-the-files-are-installed)). You attach one or more of those to a
+language under **Language options → Keyboards**, and the active layout for the current input thread is
+whichever you last selected with **Win + Space** or the taskbar language indicator. Switching the
+active layout simply makes `win32k.sys` start reading a different layout DLL's tables; nothing else
+about the system changes, and no process is restarted.
+
 ## Security
 
 **This repository has no known security risks.** The repository archive — including the prebuilt
 binaries in `installer/` (`setup.exe`, the three `.msi` packages, and the per-architecture
 `ColemDH.dll` files) — has been submitted to the ANY.RUN interactive malware sandbox.
 
-The entire setup has been scanned, even though a scan is not a hollistic security defence, the script only binds certain scan codes to others, therefore the attack vector is very minimal.
+The entire setup has been scanned, even though a scan is not a holistic security defence, the script only binds certain scan codes to others, therefore the attack vector is very minimal.
 
 - **Full report:** https://app.any.run/tasks/94e96fe3-a901-4064-b825-9ca452b80b61
 
