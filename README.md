@@ -39,8 +39,8 @@ x c d v z   k h , . /
 binaries in `installer/` (`setup.exe`, the three `.msi` packages, and the per-architecture
 `ColemDH.dll` files) — has been submitted to the ANY.RUN interactive malware sandbox.
 
-- **Sample analyzed:** the repository archive, which contains the MSKLC build output under `installer/`.
-- **Verdict:** **No threats detected.**
+The entire setup has been scanned, even though a scan is not a hollistic security defence, the script only binds certain scan codes to others, therefore the attack vector is very minimal.
+
 - **Full report:** https://app.any.run/tasks/94e96fe3-a901-4064-b825-9ca452b80b61
 
 Additional points:
